@@ -93,6 +93,32 @@ app.patch('/todos/:id', (req, res) => {
     }).catch((e) => res.status(400).send());
 });
 
+// {
+//     email: 'andrew@example.com',
+//     password: 'ajskfasdjfčldjlčfksdaj',
+//     tokens: [{
+//         access: 'auth',
+//         token: 'pafsjasdfčjfdsčlkajfdalč'
+//     }]
+// }
+
+// POST /users --> new user
+
+app.post('/users', (req, res) => {
+    let userBody = _.pick(req.body, ['email', 'password']);
+    let user = new User(userBody);
+
+    user.save().then(() => {
+        return user.generateAuthToken();
+    }).then((token) => {
+        console.log('User', user);
+        res.header('x-auth', token).send(user);
+    }).catch((e) => {
+        console.log(e);
+        res.status(400).send(e);
+    });
+});
+
 app.listen(port, () => {
     console.log(`Started on port ${port}`);
 });
